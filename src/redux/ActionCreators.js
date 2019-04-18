@@ -7,16 +7,47 @@ import { baseUrl } from '../shared/baseUrl';
 //takes in four parameters to create it, in an arrow function.
 //the payload contains whatever needs to be carried in.
 //so the data that is sent back by the addComment.
-export const addComment = (dishId, rating, author, comment) => ({
+export const addComment = (comment) => ({
     type: ActionTypes.ADD_COMMENT,
-    payload: {
+    payload: comment
+});
+//fetchDishes is a thunk. will dispatch several actions
+export const postComment = (dishId, rating, author, comment) => (dispatch) => {
+
+    const newComment = {
         dishId: dishId,
         rating: rating,
         author: author,
         comment: comment
-    }
-});
-//fetchDishes is a thunk. will dispatch several actions
+    };
+    newComment.date = new Date().toISOString();
+
+    return fetch(baseUrl + 'comments', {
+        method: 'POST',
+        body: JSON.stringify(newComment),
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => {
+        if (response.ok) {
+          return response;
+        } else {
+          var error = new Error('Error ' + response.status + ': ' + response.statusText);
+          error.response = response;
+          throw error;
+        }
+      },
+      error => {
+            var errmess = new Error(error.message);
+            throw errmess;
+      })
+      .then(response => response.json())
+      .then(response => dispatch(addComment(response)))
+      .catch(error => { console.log('Post comments ', error.message);
+        alert('Your comment could not be posted\nError: '+ error.message); });
+};
 export const fetchDishes = () => (dispatch) => {
     dispatch(dishesLoading(true));
 
