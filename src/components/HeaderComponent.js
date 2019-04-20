@@ -86,7 +86,7 @@ class Header extends Component {
                </div>
            </div>
        </Jumbotron>
-// Introducing the modal, controlled from React component
+
        <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
             <ModalHeader toggle={this.state.isModalOpen}>Login</ModalHeader>
             <ModalBody>
